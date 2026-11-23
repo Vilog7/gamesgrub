@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="GAMER'S GRUB — Your ultimate 3D gaming destination and esports cafe. Play, compete, explore and experience gaming like never before." />
+  <meta name="theme-color" content="#000000" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2306050a'/%3E%3Cpath d='M6 6h20v20H6z' fill='none' stroke='%238b5cf6' stroke-width='3'/%3E%3C/svg%3E" />
+  <title>GAMER'S GRUB — Play. Connect. Enjoy.</title>
+
+  <!-- Typography: Futuristic geometric display + clean UI sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="animations.css" />
+</head>
+<body class="intro-active">
+  <!-- Skip link for keyboard accessibility (visually hidden until focused) -->
+  <a href="#main-site" class="skip-link">Skip 3D intro to main website</a>
+
+  <!-- =====================================================================
+       PART 1 & 2: CINEMATIC 3D ENDLESS-RUNNER INTRO STAGE
+       Starts pure pitch black (#000000) with zero visible UI.
+       Scroll controls road reveal, 1st-person running, jumps, slides,
+       lane transitions, and smooth fade back into darkness.
+       ===================================================================== -->
+  <section id="intro-stage" class="intro-stage" aria-label="Cinematic 3D Endless Runner Introduction">
+    <div id="intro-viewport" class="intro-viewport">
+      <!-- Real-time Three.js WebGL Canvas -->
+      <canvas id="three-canvas" class="three-canvas" aria-hidden="true"></canvas>
+
+      <!-- Subtle vignette & speed-lines atmosphere overlay (opacity 0 at start) -->
+      <div id="intro-vignette" class="intro-vignette" aria-hidden="true"></div>
+
+      <!-- Minimal Gaming Coin HUD (hidden in Stage 1, fades in at Stage 4 Coin Collection) -->
+      <div id="game-hud" class="game-hud" aria-hidden="true">
+        <div class="hud-coin-badge">
+          <svg class="hud-coin-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="#f59e0b" stroke="#fde68a" stroke-width="2"></circle>
+            <polygon points="12,6.5 15.2,12 12,17.5 8.8,12" fill="#fef3c7"></polygon>
+          </svg>
+          <span class="hud-label">COINS:</span>
+          <span id="hud-coin-count" class="hud-value">000</span>
+          <span id="hud-coin-pop" class="hud-coin-pop" aria-hidden="true">+1</span>
+        </div>
+      </div>
+
+      <!-- Pure black veil controlling Scene 1 darkness & Part 2 blackout transition -->
+      <div id="black-curtain" class="black-curtain" aria-hidden="true"></div>
+
+      <!-- Reduced-motion / WebGL fallback subtle container (only shown if WebGL unavailable) -->
+      <div id="webgl-fallback" class="webgl-fallback" hidden>
+        <p class="webgl-fallback-text">Scroll to enter GAMER'S GRUB</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       PART 3: MAIN GAMER'S GRUB WEBSITE
+       Hidden completely during the 3D intro; emerges smoothly from darkness.
+       ===================================================================== -->
+  <div id="main-site" class="main-site" aria-hidden="true">
+    <!-- Top Navigation Bar (No logo yet — official logo will be added separately) -->
+    <header id="site-header" class="site-header">
+      <div class="header-accent-notch" aria-hidden="true"></div>
+      <div class="container header-inner">
+        <!-- Reserved brand space (intentionally empty until official logo is provided) -->
+        <div class="brand-placeholder" aria-label="Gamer's Grub"></div>
+
+        <!-- Primary Navigation -->
+        <nav class="main-nav" aria-label="Primary navigation">
+          <ul class="nav-list">
+            <li><a href="#home" class="nav-link is-active">Home</a></li>
+            <li><a href="#games" class="nav-link">Games</a></li>
+            <li><a href="#about" class="nav-link">About</a></li>
+            <li><a href="#cafe" class="nav-link">Cafe</a></li>
+            <li><a href="#community" class="nav-link">Community</a></li>
+            <li><a href="#contact" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+
+        <!-- Search & Action Controls -->
+        <div class="header-actions">
+          <div class="search-box">
+            <label for="game-search" class="visually-hidden">Search games</label>
+            <input
+              type="search"
+              id="game-search"
+              class="search-input"
+              placeholder="Search games..."
+              autocomplete="off"
+            />
+            <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
+            </svg>
+          </div>
+          <a href="#contact" class="btn-outline-sm">Visit Us</a>
+
+          <!-- Mobile Navigation Toggle -->
+          <button
+            type="button"
+            id="mobile-menu-btn"
+            class="mobile-menu-btn"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="mobile-nav-drawer"
+          >
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Navigation Drawer -->
+      <div id="mobile-nav-drawer" class="mobile-nav-drawer" hidden>
+        <nav aria-label="Mobile navigation">
+          <ul class="mobile-nav-list">
+            <li><a href="#home" class="mobile-nav-link">Home</a></li>
+            <li><a href="#games" class="mobile-nav-link">Games</a></li>
+            <li><a href="#about" class="mobile-nav-link">About</a></li>
+            <li><a href="#cafe" class="mobile-nav-link">Cafe</a></li>
+            <li><a href="#community" class="mobile-nav-link">Community</a></li>
+            <li><a href="#contact" class="mobile-nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- ===============================================================
+           HERO SECTION
+           =============================================================== -->
+      <section id="home" class="hero-section">
+        <div class="hero-bg-media" aria-hidden="true">
+          <img
+            src="hero-setup.jpg"
+            alt=""
+            class="hero-bg-img"
+            width="1920"
+            height="1080"
+            decoding="async"
+          />
+          <div class="hero-gradient-mask"></div>
+          <div class="hero-corner-shard"></div>
+        </div>
+
+        <div class="container hero-content">
+          <div class="hero-copy">
+            <p class="hero-tagline">PLAY &middot; CONNECT &middot; ENJOY</p>
+            <h1 class="hero-title">
+              <span class="hero-title-white">GAMER'S</span>
+              <span class="hero-title-purple">GRUB</span>
+            </h1>
+            <p class="hero-subtitle">
+              <strong>Your ultimate gaming destination.</strong> Play, compete, explore and experience gaming like never before.
+            </p>
+            <div class="hero-cta-group">
+              <a href="#games" class="btn-primary">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                  <polygon points="6,4 20,12 6,20"></polygon>
+                </svg>
+                Explore Games
+              </a>
+              <a href="#cafe" class="btn-secondary">Discover Our Cafe</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+           FEATURES SECTION (4 Chamfered Cards)
+           =============================================================== -->
+      <section id="about" class="features-section" aria-label="Key Features">
+        <div class="container">
+          <div class="features-grid">
+            <article class="feature-card-wrap reveal-on-scroll">
+              <a href="#cafe" class="feature-card">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                    <path d="M6.5 6C3.46 6 1 8.46 1 11.5v3.25C1 16.54 2.46 18 4.25 18c1.12 0 2.13-.58 2.71-1.52L8.2 14.5h7.6l1.24 1.98c.58.94 1.59 1.52 2.71 1.52 1.79 0 3.25-1.46 3.25-3.25V11.5C23 8.46 20.54 6 17.5 6h-11zm1.25 3h1.5v1.75H11v1.5H9.25V14h-1.5v-1.75H6v-1.5h1.75V9zm8.75.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zm-2 2.25a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5z"/>
+                  </svg>
+                </div>
+                <div class="feature-body">
+                  <h2 class="feature-title">Play Together</h2>
+                  <p class="feature-desc">Team up with friends on high-refresh PCs and next-gen consoles.</p>
+                </div>
+                <span class="feature-arrow" aria-hidden="true">&#8250;</span>
+              </a>
+            </article>
+
+            <article class="feature-card-wrap reveal-on-scroll">
+              <a href="#games" class="feature-card">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+                    <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/>
+                  </svg>
+                </div>
+                <div class="feature-body">
+                  <h2 class="feature-title">Stay Updated</h2>
+                  <p class="feature-desc">Catch the latest title drops, patch nights, and cafe events.</p>
+                </div>
+                <span class="feature-arrow" aria-hidden="true">&#8250;</span>
+              </a>
+            </article>
+
+            <article class="feature-card-wrap reveal-on-scroll">
+              <a href="#community" class="feature-card">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                  </svg>
+                </div>
+                <div class="feature-body">
+                  <h2 class="feature-title">Be a Part</h2>
+                  <p class="feature-desc">Join a thriving local community of casual and ranked players.</p>
+                </div>
+                <span class="feature-arrow" aria-hidden="true">&#8250;</span>
+              </a>
+            </article>
+
+            <article class="feature-card-wrap reveal-on-scroll">
+              <a href="#contact" class="feature-card">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+                    <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V19H7v2h10v-2h-4v-3.1a5.01 5.01 0 0 0 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
+                  </svg>
+                </div>
+                <div class="feature-body">
+                  <h2 class="feature-title">Compete &amp; Win</h2>
+                  <p class="feature-desc">Take part in weekly LAN tournaments, brackets, and squad showdowns.</p>
+                </div>
+                <span class="feature-arrow" aria-hidden="true">&#8250;</span>
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+           POPULAR GAMES SECTION
+           =============================================================== -->
+      <section id="games" class="section games-section">
+        <div class="container">
+          <div class="section-header">
+            <div class="section-heading-group">
+              <h2 class="section-title">POPULAR GAMES</h2>
+              <div class="section-underline" aria-hidden="true">
+                <span class="underline-white"></span>
+                <span class="underline-purple"></span>
+                <span class="underline-slash"></span>
+                <span class="underline-slash"></span>
+              </div>
+            </div>
+            <div class="games-controls">
+              <div class="filter-pills" role="group" aria-label="Filter games by platform">
+                <button type="button" class="filter-pill is-active" data-filter="all">All</button>
+                <button type="button" class="filter-pill" data-filter="pc">PC</button>
+                <button type="button" class="filter-pill" data-filter="console">Console</button>
+              </div>
+              <button type="button" id="reset-games-btn" class="view-all-link">View All Games &rarr;</button>
+            </div>
+          </div>
+
+          <div id="games-grid" class="games-grid">
+            <!-- Card 1 -->
+            <article class="game-card-wrap reveal-on-scroll" data-platform="pc console" data-title="blockrealm odyssey sandbox adventure">
+              <div class="game-card">
+                <img src="game-sandbox.jpg" alt="Blockrealm Odyssey voxel adventure cover art" class="game-card-img" loading="lazy" width="800" height="600" />
+                <div class="game-card-overlay">
+                  <span class="game-badge">SANDBOX</span>
+                  <h3 class="game-card-title">BLOCKREALM ODYSSEY</h3>
+                  <p class="game-card-meta">PC &bull; Co-op Multiplayer</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 2 -->
+            <article class="game-card-wrap reveal-on-scroll" data-platform="pc" data-title="apex protocol tactical shooter fps 5v5">
+              <div class="game-card">
+                <img src="game-tactical.jpg" alt="Apex Protocol tactical 5v5 shooter cover art" class="game-card-img" loading="lazy" width="800" height="600" />
+                <div class="game-card-overlay">
+                  <span class="game-badge">5V5 TACTICAL FPS</span>
+                  <h3 class="game-card-title">APEX PROTOCOL</h3>
+                  <p class="game-card-meta">PC &bull; Competitive LAN</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 3 -->
+            <article class="game-card-wrap reveal-on-scroll" data-platform="pc console" data-title="neon vice open world action crime">
+              <div class="game-card">
+                <img src="game-openworld.jpg" alt="Neon Vice open world action cover art" class="game-card-img" loading="lazy" width="800" height="600" />
+                <div class="game-card-overlay">
+                  <span class="game-badge">OPEN WORLD</span>
+                  <h3 class="game-card-title">NEON VICE</h3>
+                  <p class="game-card-meta">PC &bull; Console</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 4 -->
+            <article class="game-card-wrap reveal-on-scroll" data-platform="pc console" data-title="stormfront squad battle royale multiplayer">
+              <div class="game-card">
+                <img src="game-battleroyale.jpg" alt="Stormfront Squad battle royale cover art" class="game-card-img" loading="lazy" width="800" height="600" />
+                <div class="game-card-overlay">
+                  <span class="game-badge">BATTLE ROYALE</span>
+                  <h3 class="game-card-title">STORMFRONT SQUAD</h3>
+                  <p class="game-card-meta">PC &bull; Console Squads</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 5 -->
+            <article class="game-card-wrap reveal-on-scroll" data-platform="pc console" data-title="crown of ash dark fantasy action rpg">
+              <div class="game-card">
+                <img src="game-fantasy.jpg" alt="Crown of Ash dark fantasy RPG cover art" class="game-card-img" loading="lazy" width="800" height="600" />
+                <div class="game-card-overlay">
+                  <span class="game-badge">ACTION RPG</span>
+                  <h3 class="game-card-title">CROWN OF ASH</h3>
+                  <p class="game-card-meta">PC &bull; Console 4K</p>
+                </div>
+              </div>
+            </article>
+          </div>
+          <p id="games-empty-state" class="games-empty-state" hidden>No games match your search. Try another title or click "View All Games".</p>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+           GAMING CAFE SECTION
+           =============================================================== -->
+      <section id="cafe" class="section cafe-section">
+        <div class="container">
+          <div class="section-header">
+            <div class="section-heading-group">
+              <p class="section-eyebrow">THE ARENA</p>
+              <h2 class="section-title">THE GAMING CAFE</h2>
+              <div class="section-underline" aria-hidden="true">
+                <span class="underline-white"></span>
+                <span class="underline-purple"></span>
+                <span class="underline-slash"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Split showcase with real cafe photography -->
+          <div class="cafe-showcase">
+            <div class="cafe-media-stack reveal-on-scroll">
+              <figure class="cafe-primary-shot">
+                <img
+                  src="cafe-arena.jpg"
+                  alt="Gamer's Grub main PC gaming corridor with neon violet ceiling lighting and dual rows of gaming setups"
+                  loading="lazy"
+                  width="960"
+                  height="640"
+                />
+                <figcaption class="shot-tag">MAIN PC ARENA</figcaption>
+              </figure>
+              <figure class="cafe-secondary-shot">
+                <img
+                  src="cafe-console.jpg"
+                  alt="Gamer's Grub console zone featuring big-screen displays, steering wheel racing rig, neon wall art, and chilled drinks"
+                  loading="lazy"
+                  width="760"
+                  height="520"
+                />
+                <figcaption class="shot-tag">CONSOLE &amp; SIM LOUNGE</figcaption>
+              </figure>
+            </div>
+
+            <div class="cafe-info reveal-on-scroll">
+              <h3 class="cafe-lead">Built for Competitive Focus &amp; Squad Nights</h3>
+              <p class="cafe-description">
+                Step inside Gamer's Grub — a purpose-built gaming sanctuary combining tournament-grade PC stations, immersive console lounges, racing sim gear, and an electric neon atmosphere designed for marathon sessions.
+              </p>
+
+              <div class="cafe-pillars">
+                <div class="pillar-item">
+                  <div class="pillar-marker" aria-hidden="true">01</div>
+                  <div>
+                    <h4>High-Performance Gaming PCs</h4>
+                    <p>Dedicated RTX-powered rigs, high-refresh esports monitors, mechanical keyboards, and surround gaming headsets.</p>
+                  </div>
+                </div>
+                <div class="pillar-item">
+                  <div class="pillar-marker" aria-hidden="true">02</div>
+                  <div>
+                    <h4>Console &amp; Sim Racing Zone</h4>
+                    <p>Big-screen next-gen console stations, couch co-op seating, and force-feedback steering wheel setups.</p>
+                  </div>
+                </div>
+                <div class="pillar-item">
+                  <div class="pillar-marker" aria-hidden="true">03</div>
+                  <div>
+                    <h4>Multiplayer Squad Rows</h4>
+                    <p>Side-by-side 5-stack seating engineered for zero-lag LAN play, scrims, and weekend tournaments.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Facilities Badges -->
+              <div class="facilities-block">
+                <h4 class="facilities-heading">Available Facilities</h4>
+                <ul class="facilities-list">
+                  <li>High-Speed Fiber LAN</li>
+                  <li>Ergonomic Gaming Chairs</li>
+                  <li>Air-Conditioned Arena</li>
+                  <li>Chilled Drinks &amp; Snacks</li>
+                  <li>Private Squad Bookings</li>
+                  <li>Tournament Hosting</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+           COMMUNITY & GALLERY SECTION
+           =============================================================== -->
+      <section id="community" class="section gallery-section">
+        <div class="container">
+          <div class="section-header">
+            <div class="section-heading-group">
+              <p class="section-eyebrow">INSIDE GAMER'S GRUB</p>
+              <h2 class="section-title">COMMUNITY &amp; GALLERY</h2>
+              <div class="section-underline" aria-hidden="true">
+                <span class="underline-white"></span>
+                <span class="underline-purple"></span>
+                <span class="underline-slash"></span>
+              </div>
+            </div>
+            <p class="section-side-note">Click any photograph to inspect full screen</p>
+          </div>
+
+          <div class="gallery-grid">
+            <div class="gallery-item-wrap gallery-item-wide reveal-on-scroll">
+              <button
+                type="button"
+                class="gallery-item"
+                data-full="cafe-arena.jpg"
+                data-caption="Main PC Arena — Dual rows of RGB tournament rigs under signature violet lighting"
+              >
+                <img src="cafe-arena.jpg" alt="Main PC Arena with dual rows of gaming stations" loading="lazy" />
+                <span class="gallery-caption">
+                  <strong>Main PC Arena</strong>
+                  <span>Dual rows of high-refresh stations</span>
+                </span>
+              </button>
+            </div>
+
+            <div class="gallery-item-wrap reveal-on-scroll">
+              <button
+                type="button"
+                class="gallery-item"
+                data-full="cafe-console.jpg"
+                data-caption="Console &amp; Racing Lounge — Big-screen displays, steering wheel rig, neon art &amp; drinks"
+              >
+                <img src="cafe-console.jpg" alt="Console gaming area with steering wheel and neon lights" loading="lazy" />
+                <span class="gallery-caption">
+                  <strong>Console &amp; Sim Zone</strong>
+                  <span>4K displays &amp; racing rig</span>
+                </span>
+              </button>
+            </div>
+
+            <div class="gallery-item-wrap reveal-on-scroll">
+              <button
+                type="button"
+                class="gallery-item"
+                data-full="cafe-pc-zone.jpg"
+                data-caption="Full House Squad Session — PC rows and console fighting games in action"
+              >
+                <img src="cafe-pc-zone.jpg" alt="Packed gaming cafe with players competing on PCs and consoles" loading="lazy" />
+                <span class="gallery-caption">
+                  <strong>Community Nights</strong>
+                  <span>Packed PC &amp; console sessions</span>
+                </span>
+              </button>
+            </div>
+
+            <div class="gallery-item-wrap reveal-on-scroll">
+              <button
+                type="button"
+                class="gallery-item"
+                data-full="cafe-squad.jpg"
+                data-caption="5-Stack Competitive Row — Elevated RGB towers and side-by-side esports monitors"
+              >
+                <img src="cafe-squad.jpg" alt="Five players in a row playing competitive FPS on illuminated PC setups" loading="lazy" />
+                <span class="gallery-caption">
+                  <strong>5-Stack Esports Row</strong>
+                  <span>Built for ranked &amp; LAN scrims</span>
+                </span>
+              </button>
+            </div>
+
+            <div class="gallery-item-wrap reveal-on-scroll">
+              <button
+                type="button"
+                class="gallery-item"
+                data-full="hero-setup.jpg"
+                data-caption="Pro-Grade Peripherals — Mechanical keyboards, precision controllers &amp; surround headsets"
+              >
+                <img src="hero-setup.jpg" alt="Dark violet-lit gaming desk with controller, mechanical keyboard, and headset" loading="lazy" />
+                <span class="gallery-caption">
+                  <strong>Pro Peripherals</strong>
+                  <span>Tuned for precision &amp; comfort</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+           CONTACT SECTION (Placeholders — No invented business details)
+           =============================================================== -->
+      <section id="contact" class="section contact-section">
+        <div class="container">
+          <div class="section-header">
+            <div class="section-heading-group">
+              <p class="section-eyebrow">GET IN TOUCH</p>
+              <h2 class="section-title">CONTACT &amp; LOCATION</h2>
+              <div class="section-underline" aria-hidden="true">
+                <span class="underline-white"></span>
+                <span class="underline-purple"></span>
+                <span class="underline-slash"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-layout">
+            <!-- Left Column: Info Placeholders + Map Placeholder -->
+            <div class="contact-info-col reveal-on-scroll">
+              <div class="info-cards-grid">
+                <div class="info-card">
+                  <span class="info-label">CAFE ADDRESS</span>
+                  <p class="info-value">[Cafe Street Address, Area, City, Postal Code]</p>
+                </div>
+                <div class="info-card">
+                  <span class="info-label">PHONE NUMBER</span>
+                  <p class="info-value">[+00 00000 00000]</p>
+                </div>
+                <div class="info-card info-card-full">
+                  <span class="info-label">OPENING HOURS</span>
+                  <p class="info-value">[Monday – Sunday: 00:00 AM – 00:00 PM]</p>
+                </div>
+              </div>
+
+              <!-- Social Links -->
+              <div class="social-row">
+                <span class="info-label">FOLLOW US</span>
+                <div class="social-links">
+                  <a href="#contact" class="social-btn" aria-label="Instagram (placeholder)">Instagram</a>
+                  <a href="#contact" class="social-btn" aria-label="Discord (placeholder)">Discord</a>
+                  <a href="#contact" class="social-btn" aria-label="YouTube (placeholder)">YouTube</a>
+                  <a href="#contact" class="social-btn" aria-label="X / Twitter (placeholder)">X</a>
+                </div>
+              </div>
+
+              <!-- Google Maps Integration Placeholder -->
+              <div class="map-placeholder" role="region" aria-label="Google Maps location placeholder">
+                <div class="map-grid-bg" aria-hidden="true"></div>
+                <div class="map-placeholder-content">
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M12 21s-7-5.686-7-11a7 7 0 1 1 14 0c0 5.314-7 11-7 11z"></path>
+                    <circle cx="12" cy="10" r="2.5"></circle>
+                  </svg>
+                  <p class="map-placeholder-title">Google Maps Integration Placeholder</p>
+                  <p class="map-placeholder-sub">Embed your verified Gamer's Grub Google Maps iframe here.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Contact Form with Post-Interaction Validation -->
+            <div class="contact-form-col reveal-on-scroll">
+              <form id="contact-form" class="contact-form" novalidate>
+                <h3 class="form-heading">Send a Message or Squad Inquiry</h3>
+                <p class="form-sub">Reserve rigs, ask about tournaments, or connect with our team.</p>
+
+                <div class="form-field">
+                  <label for="contact-name">Your Name</label>
+                  <span id="name-hint" class="field-hint">Enter your full name or gamer tag</span>
+                  <input
+                    type="text"
+                    id="contact-name"
+                    name="name"
+                    required
+                    minlength="2"
+                    autocomplete="name"
+                    aria-describedby="name-hint"
+                    data-error="name-error"
+                    placeholder="e.g. Alex / ShadowVex"
+                  />
+                  <div id="name-error" class="error-msg">
+                    <span role="img" aria-label="Error">&#9888;</span> Please enter at least 2 characters for your name.
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="contact-email">Email Address</label>
+                  <span id="email-hint" class="field-hint">Format: you@example.com</span>
+                  <input
+                    type="email"
+                    id="contact-email"
+                    name="email"
+                    required
+                    autocomplete="email"
+                    aria-describedby="email-hint"
+                    data-error="email-error"
+                    placeholder="you@example.com"
+                  />
+                  <div id="email-error" class="error-msg">
+                    <span role="img" aria-label="Error">&#9888;</span> Enter a valid email address in the format you@example.com.
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="contact-topic">Inquiry Type</label>
+                  <select id="contact-topic" name="topic">
+                    <option value="booking">PC / Console Seat Booking</option>
+                    <option value="tournament">Tournament Registration</option>
+                    <option value="party">Private Squad Event</option>
+                    <option value="general">General Question</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="contact-message">Message</label>
+                  <span id="message-hint" class="field-hint">Minimum 10 characters</span>
+                  <textarea
+                    id="contact-message"
+                    name="message"
+                    rows="4"
+                    required
+                    minlength="10"
+                    aria-describedby="message-hint"
+                    data-error="message-error"
+                    placeholder="Tell us when you want to play or how we can help..."
+                  ></textarea>
+                  <div id="message-error" class="error-msg">
+                    <span role="img" aria-label="Error">&#9888;</span> Please enter a message of at least 10 characters.
+                  </div>
+                </div>
+
+                <button type="submit" class="btn-primary form-submit-btn">Send Message</button>
+                <div id="form-status" class="form-status" role="status" aria-live="polite" hidden></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===============================================================
+         FOOTER
+         =============================================================== -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <span class="footer-wordmark">GAMER'S <span>GRUB</span></span>
+          <p class="footer-tagline">PLAY &middot; CONNECT &middot; ENJOY</p>
+        </div>
+        <div class="footer-actions">
+          <button type="button" id="replay-intro-btn" class="btn-outline-sm">Replay 3D Intro &uarr;</button>
+        </div>
+        <p class="footer-copy">&copy; <span id="footer-year">2026</span> GAMER'S GRUB. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Native Modal Lightbox for Gallery (uses closedby="any" + JS fallback) -->
+  <dialog id="gallery-lightbox" class="gallery-lightbox" closedby="any" aria-labelledby="lightbox-caption">
+    <div class="lightbox-frame">
+      <div class="lightbox-toolbar">
+        <p id="lightbox-caption" class="lightbox-caption"></p>
+        <button type="button" id="lightbox-close" class="lightbox-close-btn" aria-label="Close image preview">&times;</button>
+      </div>
+      <div class="lightbox-stage">
+        <button type="button" id="lightbox-prev" class="lightbox-nav-btn" aria-label="Previous image">&#8249;</button>
+        <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+        <button type="button" id="lightbox-next" class="lightbox-nav-btn" aria-label="Next image">&#8250;</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Libraries: Three.js + GSAP + ScrollTrigger -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+
+  <!-- Modular Application Scripts -->
+  <script src="three-scene.js" defer></script>
+  <script src="road.js" defer></script>
+  <script src="player.js" defer></script>
+  <script src="coins.js" defer></script>
+  <script src="obstacles.js" defer></script>
+  <script src="scroll-controller.js" defer></script>
+  <script src="main.js" defer></script>
+</body>
+</html>
